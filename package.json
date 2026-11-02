@@ -36,13 +36,16 @@
   "engines": {
     "node": ">=22.13"
   },
+  "peerDependencies": {
+    "@opencode/plugin": "2.1.4"
+  },
   "dependencies": {
     "@bufbuild/protobuf": "^2.2.5",
     "@cursor/sdk": "1.2.0",
-    "@opencode/plugin": "2.1.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@opencode/plugin": "2.1.4",
     "@types/node": "^24.6.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"

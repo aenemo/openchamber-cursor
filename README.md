@@ -99,3 +99,18 @@ node scripts/install-dev.mjs
 ```
 
 The installer works on Windows, macOS, and Linux. It adds one `plugins` entry for this repository. It does not also copy the plugin into the `plugins` folder under the OpenCode config folder, because OpenCode loads that folder automatically and a second copy fails activation. Restart OpenCode or OpenChamber after every rebuild.
+
+## Publish to npm
+
+Maintainers only. The tarball ships only `dist/` (see `files` in `package.json`); `prepublishOnly` runs `npm run build` before upload.
+
+1. Create an [npm account](https://www.npmjs.com/signup) and enable 2FA.
+2. Check the package name is free: `npm view openchamber-cursor`. If taken, publish as `@aenemo/openchamber-cursor` and use `npm publish --access public`.
+3. From the repo root: `npm install`, `npm test`, `npm run build`.
+4. Dry-run the tarball: `npm pack --dry-run` (expect `dist/`, `LICENSE`, `README.md`, `package.json`).
+5. Log in: `npm login`, then `npm whoami`.
+6. Publish: `npm publish` (add `--access public` for a scoped name).
+7. Tag GitHub to match: `git tag v0.1.0`, `git push origin v0.1.0`.
+8. Verify: `npm view openchamber-cursor version`, then `opencode plugin add openchamber-cursor@0.1.0`.
+
+Later releases: bump with `npm version patch` (updates `package.json`, creates a git tag), push tags, then `npm publish`. You cannot republish the same version.
