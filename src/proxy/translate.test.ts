@@ -353,7 +353,7 @@ describe("token expiry", () => {
   })
 
   it("mints a Cursor SDK API key from a browser JWT and reuses the cached key", async () => {
-    process.env.OPENCHAMBER_CURSOR_CACHE = fs.mkdtempSync(path.join(os.tmpdir(), "openchamber-cursor-mint-"))
+    process.env.OPENCODEV2_CURSOR_CACHE = fs.mkdtempSync(path.join(os.tmpdir(), "opencodev2-cursor-mint-"))
     let calls = 0
     const fakeFetch = (async (_url: string | URL | Request, init?: RequestInit) => {
       calls += 1

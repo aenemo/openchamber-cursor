@@ -10,7 +10,7 @@ function logFile(): string {
     fs.mkdirSync(dir, { recursive: true })
     dirReady = true
   }
-  return path.join(dir, "openchamber-cursor.log")
+  return path.join(dir, "opencodev2-cursor.log")
 }
 
 export function log(level: "info" | "warn" | "error", message: string, extra?: unknown): void {
