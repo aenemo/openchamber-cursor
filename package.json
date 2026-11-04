@@ -1,14 +1,14 @@
 {
-  "name": "openchamber-cursor",
+  "name": "opencodev2-cursor",
   "version": "0.1.0",
   "description": "OpenCode V2 plugin that uses a Cursor subscription from OpenChamber and other OpenCode hosts.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aenemo/openchamber-cursor.git"
+    "url": "git+https://github.com/aenemo/opencodev2-cursor.git"
   },
-  "bugs": "https://github.com/aenemo/openchamber-cursor/issues",
-  "homepage": "https://github.com/aenemo/openchamber-cursor#readme",
+  "bugs": "https://github.com/aenemo/opencodev2-cursor/issues",
+  "homepage": "https://github.com/aenemo/opencodev2-cursor#readme",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -220,7 +220,7 @@ export function startProxy(depsOrGet: ProxyDeps | (() => ProxyDeps)): Promise<Ru
       const backend = deps.backends[choice]
       const encodedDir = req.headers["x-opencode-directory"]
       const cwd = typeof encodedDir === "string" && encodedDir ? decodeURIComponent(encodedDir) : deps.fallbackDirectory()
-      const sessionHeader = req.headers["x-openchamber-cursor-session"]
+      const sessionHeader = req.headers["x-opencodev2-cursor-session"]
       const sessionKey = typeof sessionHeader === "string" && sessionHeader ? sessionHeader : "default"
       const controller = new AbortController()
       req.on("close", () => controller.abort())

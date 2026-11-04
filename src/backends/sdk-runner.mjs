@@ -98,7 +98,7 @@ function agentLocalOptions(cmd, tools) {
 
 async function ensurePrewarm(cmd) {
   if (!cmd.cwd || !cmd.apiKey) return
-  ensureStore(cmd.stateRoot || path.join(cmd.cwd, ".openchamber-cursor-sdk"))
+  ensureStore(cmd.stateRoot || path.join(cmd.cwd, ".opencodev2-cursor-sdk"))
   if (prewarmRelease && prewarmedCwd === cmd.cwd && prewarmedApiKey === cmd.apiKey) return
   if (prewarmRelease) {
     try {
@@ -115,7 +115,7 @@ async function ensurePrewarm(cmd) {
     prewarmRelease = await platform.prewarmLocalWorkspace({
       apiKey: cmd.apiKey,
       model: { id: "auto-smart" },
-      name: "openchamber-cursor",
+      name: "opencodev2-cursor",
       local: {
         cwd: cmd.cwd,
         store,
@@ -151,7 +151,7 @@ async function ensureAgent(cmd) {
   const options = {
     apiKey: cmd.apiKey,
     model,
-    name: "openchamber-cursor",
+    name: "opencodev2-cursor",
     local: agentLocalOptions(cmd, tools),
   }
   if (cmd.tools?.length) {

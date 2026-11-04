@@ -97,7 +97,7 @@ export async function mintUserApiKey(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      name: `openchamber-cursor-${os.hostname()}`,
+      name: `opencodev2-cursor-${os.hostname()}`,
       expiresAt: String(Math.floor(expires)),
     }),
   })

@@ -9,8 +9,8 @@ import { modelsForPublish, noteDiscovered, publishProvider } from "./plugin/cata
 import { startSharedProxy, type RunningProxy } from "./proxy/server.js"
 import { log } from "./util/log.js"
 
-const OpenChamberCursor = Plugin.define({
-  id: "openchamber-cursor",
+const OpenCodeV2Cursor = Plugin.define({
+  id: "opencodev2-cursor",
   async setup(ctx) {
     await registerIntegrations(ctx)
     const state: { port: number; token: string } = {
@@ -85,7 +85,7 @@ const OpenChamberCursor = Plugin.define({
           log("warn", "session directory lookup failed", error instanceof Error ? error.message : error)
         }
         event.headers["x-opencode-directory"] = encodeURIComponent(directory)
-        event.headers["x-openchamber-cursor-session"] = String(event.sessionID)
+        event.headers["x-opencodev2-cursor-session"] = String(event.sessionID)
         event.headers.authorization = `Bearer ${state.token}`
         event.baseURL = `http://127.0.0.1:${state.port}/v1`
       },
@@ -113,6 +113,6 @@ const OpenChamberCursor = Plugin.define({
   },
 })
 
-export default OpenChamberCursor
+export default OpenCodeV2Cursor
 
 export type { PluginNamespace }

@@ -5,8 +5,8 @@ import { afterEach, describe, expect, it } from "vitest"
 import { FALLBACK_MODELS } from "../backends/types.js"
 import { modelsForPublish, noteDiscovered, resetCatalogForTests, resolveCursorModelId } from "./catalog.js"
 
-const dir = fs.mkdtempSync(path.join(os.tmpdir(), "openchamber-cursor-models-"))
-process.env.OPENCHAMBER_CURSOR_CACHE = dir
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), "opencodev2-cursor-models-"))
+process.env.OPENCODEV2_CURSOR_CACHE = dir
 
 describe("cursor model catalog", () => {
   afterEach(() => resetCatalogForTests())

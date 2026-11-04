@@ -3,11 +3,11 @@ import path from "node:path"
 import { createHash } from "node:crypto"
 
 export function cacheDir(): string {
-  const override = process.env.OPENCHAMBER_CURSOR_CACHE || process.env.CURSOR_CHAMBER_CACHE
+  const override = process.env.OPENCODEV2_CURSOR_CACHE || process.env.OPENCHAMBER_CURSOR_CACHE || process.env.CURSOR_CHAMBER_CACHE
   if (override) return override
   // Windows keeps %USERPROFILE%\.cache. macOS and Linux follow XDG_CACHE_HOME when it is set.
   const xdg = process.platform === "win32" ? undefined : process.env.XDG_CACHE_HOME
-  return path.join(xdg || path.join(os.homedir(), ".cache"), "openchamber-cursor")
+  return path.join(xdg || path.join(os.homedir(), ".cache"), "opencodev2-cursor")
 }
 
 /** V8 compile cache shared by the SDK worker and direct cursor-agent runs. */

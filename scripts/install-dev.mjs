@@ -11,7 +11,7 @@ if (!fs.existsSync(entry)) {
 
 // OpenCode loads every directory under ~/.config/opencode/plugins automatically.
 // A second copy in opencode.json shows up as two plugins and both fail activation.
-const autoLoaded = path.join(os.homedir(), ".config", "opencode", "plugins", "openchamber-cursor")
+const autoLoaded = path.join(os.homedir(), ".config", "opencode", "plugins", "opencodev2-cursor")
 fs.rmSync(autoLoaded, { recursive: true, force: true })
 
 const packagePath = repo.replaceAll("\\", "/")
@@ -26,7 +26,7 @@ if (!fs.existsSync(configPath)) {
   }, null, 2))
 } else {
   let text = fs.readFileSync(configPath, "utf8")
-  text = text.replace(/\s*\{[^{}]*(?:openchamber-cursor|cursor-chamber)[^{}]*\},?/g, "")
+  text = text.replace(/\s*\{[^{}]*(?:opencodev2-cursor|openchamber-cursor|cursor-chamber)[^{}]*\},?/g, "")
   if (!text.includes(packagePath)) {
     const next = text.replace(/"plugins"\s*:\s*\[/, (match) => `${match}\n      ${entryLine},`)
     if (next === text) throw new Error("Could not find a plugins array in opencode.json")
