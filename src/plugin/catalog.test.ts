@@ -15,15 +15,16 @@ describe("cursor model catalog", () => {
     expect(modelsForPublish().map((model) => model.id)).toContain("composer-2.5")
   })
 
-  it("publishes three Auto-Cursor modes instead of raw auto-smart", () => {
+  it("publishes three distinct Auto-Cursor modes without the cursor/auto alias", () => {
     const models = modelsForPublish()
     const ids = models.map((model) => model.id)
     expect(ids).toContain("auto-cursor-balanced")
     expect(ids).toContain("auto-cursor-cost")
     expect(ids).toContain("auto-cursor-intelligence")
-    expect(ids).toContain("auto")
+    expect(ids).not.toContain("auto")
     expect(ids).not.toContain("auto-smart")
     expect(models.find((model) => model.id === "auto-cursor-cost")?.name).toBe("Auto-Cursor-Cost")
+    expect(new Set(models.map((model) => model.name)).size).toBe(models.length)
   })
 
   it("keeps discovered models when a later refresh falls back", () => {
@@ -40,13 +41,13 @@ describe("cursor model catalog", () => {
     expect(modelsForPublish().some((model) => model.id === "sonnet")).toBe(true)
   })
 
-  it("keeps cursor/auto routable after discovery returns auto-smart", () => {
+  it("keeps cursor/auto routable without publishing the alias", () => {
     noteDiscovered([
       { id: "auto-smart", name: "Auto", contextWindow: 1, maxTokens: 1 },
       { id: "default", name: "Default", contextWindow: 1, maxTokens: 1 },
     ])
     const ids = modelsForPublish().map((model) => model.id)
-    expect(ids).toContain("auto")
+    expect(ids).not.toContain("auto")
     expect(ids).toContain("auto-cursor-balanced")
     expect(ids).not.toContain("auto-smart")
     expect(ids).not.toContain("default")
