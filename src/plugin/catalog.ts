@@ -60,6 +60,9 @@ export function ensureRoutableAliases(models: CursorModel[]): CursorModel[] {
 
   byId.delete("auto-smart")
   byId.delete("default")
+  // `auto` routes to Balanced for compatibility, but publishing it makes a second
+  // picker row with the same display name as Auto-Cursor-Balanced.
+  byId.delete("auto")
 
   for (const auto of AUTO_CURSOR_MODELS) {
     byId.set(auto.id, {
@@ -69,14 +72,8 @@ export function ensureRoutableAliases(models: CursorModel[]): CursorModel[] {
       maxTokens: source.maxTokens,
     })
   }
-  byId.set("auto", {
-    id: "auto",
-    name: "Auto-Cursor-Balanced",
-    contextWindow: source.contextWindow,
-    maxTokens: source.maxTokens,
-  })
 
-  const autos = ["auto-cursor-balanced", "auto-cursor-cost", "auto-cursor-intelligence", "auto"]
+  const autos = ["auto-cursor-balanced", "auto-cursor-cost", "auto-cursor-intelligence"]
   const rest = [...byId.values()].filter((model) => !autos.includes(model.id))
   return [
     ...autos.map((id) => byId.get(id)!),
