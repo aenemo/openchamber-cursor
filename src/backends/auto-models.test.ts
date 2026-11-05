@@ -25,6 +25,18 @@ describe("resolveCursorModel", () => {
     expect(resolveCursorModel("default").cursorId).toBe("auto-smart")
   })
 
+  it("sends a variant's parameters with its base model id", () => {
+    expect(resolveCursorModel("grok-4.7[effort=high,fast=true]")).toEqual({
+      pickerId: "grok-4.7[effort=high,fast=true]",
+      cursorId: "grok-4.7",
+      params: [
+        { id: "effort", value: "high" },
+        { id: "fast", value: "true" },
+      ],
+      cliModel: "grok-4.7[effort=high,fast=true]",
+    })
+  })
+
   it("passes non-auto models through unchanged", () => {
     expect(resolveCursorModel("composer-2.5")).toEqual({
       pickerId: "composer-2.5",

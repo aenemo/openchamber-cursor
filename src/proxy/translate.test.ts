@@ -163,6 +163,9 @@ describe("stream-json", () => {
       { id: "composer-2", name: "composer-2" },
       { id: "auto", name: "auto" },
     ])
+    expect(parseModelList("grok-4.7-high - Grok 4.7 High\n")).toEqual([
+      { id: "grok-4.7-high", name: "Grok 4.7 High" },
+    ])
   })
 })
 

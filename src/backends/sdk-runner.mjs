@@ -247,13 +247,25 @@ async function runTurn(cmd) {
   }
 }
 
+function listedModel(model) {
+  return {
+    id: model.id,
+    name: model.displayName || model.id,
+    variants: (model.variants ?? []).map((variant) => ({
+      name: variant.displayName,
+      params: variant.params ?? [],
+      isDefault: variant.isDefault === true,
+    })),
+  }
+}
+
 async function listModels(cmd) {
   try {
     const models = await Cursor.models.list({ apiKey: cmd.apiKey })
     emit({
       type: "models",
       id: cmd.id,
-      models: models.map((model) => ({ id: model.id, name: model.displayName || model.id })),
+      models: models.map(listedModel),
     })
   } catch (error) {
     emit({ type: "error", id: cmd.id, message: error instanceof Error ? error.message : String(error) })
@@ -274,7 +286,7 @@ async function warm(cmd) {
       ms: Date.now() - started,
       cwd: cmd.cwd,
       prewarmed: Boolean(prewarmRelease),
-      models: models.map((model) => ({ id: model.id, name: model.displayName || model.id })),
+      models: models.map(listedModel),
     })
   } catch (error) {
     emit({ type: "error", id: cmd.id, message: error instanceof Error ? error.message : String(error) })

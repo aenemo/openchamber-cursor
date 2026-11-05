@@ -2,7 +2,8 @@ import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process"
 import { createInterface } from "node:readline"
 import { fileURLToPath } from "node:url"
 import type { BackendEvent, BackendRunRequest, CursorBackend, CursorModel } from "./types.js"
-import { FALLBACK_MODELS } from "./types.js"
+import { FALLBACK_MODELS, MODEL_CONTEXT_WINDOW, MODEL_MAX_TOKENS } from "./types.js"
+import { expandSdkModels, type SdkListedModel } from "./sdk-models.js"
 import { assertNodeForSdk, nodeBinary } from "./spawn.js"
 import { modelSelectionKey } from "./auto-models.js"
 import { compileCacheDir, sdkStateDir } from "../util/paths.js"
@@ -18,7 +19,7 @@ interface RunnerEvent {
   message?: string
   arguments?: string
   agentId?: string
-  models?: Array<{ id: string; name: string }>
+  models?: SdkListedModel[]
   ms?: number
   cwd?: string
   prewarmed?: boolean
@@ -77,6 +78,15 @@ class SdkRunner {
     this.child.kill()
     this.alive = false
   }
+}
+
+function stampModels(models: SdkListedModel[]): CursorModel[] {
+  return expandSdkModels(models).map((model) => ({
+    id: model.id,
+    name: model.name,
+    contextWindow: MODEL_CONTEXT_WINDOW,
+    maxTokens: MODEL_MAX_TOKENS,
+  }))
 }
 
 function runnerScript(): string {
@@ -163,12 +173,7 @@ export class SdkBackend implements CursorBackend {
       })
       const event = await runner.next()
       if (event.type === "error") throw new Error(event.message || "SDK warm-up failed")
-      const models = (event.models ?? []).map((model) => ({
-        id: model.id,
-        name: model.name,
-        contextWindow: 200000,
-        maxTokens: 32000,
-      }))
+      const models = stampModels(event.models ?? [])
       log("info", "sdk worker warmed", {
         ms: event.ms ?? Date.now() - started,
         models: models.length,
@@ -189,14 +194,9 @@ export class SdkBackend implements CursorBackend {
         log("warn", "sdk model list failed", event.message)
         return FALLBACK_MODELS
       }
-      const models = event.models ?? []
+      const models = stampModels(event.models ?? [])
       if (models.length === 0) return FALLBACK_MODELS
-      return models.map((model) => ({
-        id: model.id,
-        name: model.name,
-        contextWindow: 200000,
-        maxTokens: 32000,
-      }))
+      return models
     })
   }
 

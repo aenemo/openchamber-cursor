@@ -3,7 +3,7 @@ import path from "node:path"
 import { randomBytes } from "node:crypto"
 import { fileURLToPath } from "node:url"
 import type { CursorBackend, CursorModel, BackendRunRequest, BackendEvent } from "./types.js"
-import { FALLBACK_MODELS, promptWithToolResults } from "./types.js"
+import { FALLBACK_MODELS, MODEL_CONTEXT_WINDOW, MODEL_MAX_TOKENS, promptWithToolResults } from "./types.js"
 import { parseModelList, parseStreamJsonLine } from "./stream-json.js"
 import { collectLaunch, spawnCommand, spawnLaunch } from "./spawn.js"
 import { resolveAgentRuntime, resolveCursorAgentLaunch, type Launch } from "../util/windows.js"
@@ -44,8 +44,8 @@ export class AgentCliBackend implements CursorBackend {
       return parsed.map((model) => ({
         id: model.id,
         name: model.name,
-        contextWindow: 200000,
-        maxTokens: 32000,
+        contextWindow: MODEL_CONTEXT_WINDOW,
+        maxTokens: MODEL_MAX_TOKENS,
       }))
     } catch (error) {
       log("warn", "cursor-agent model list failed", error instanceof Error ? error.message : error)

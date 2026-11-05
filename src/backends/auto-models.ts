@@ -40,6 +40,8 @@ export function resolveCursorModel(model: string): ResolvedCursorModel {
       cliModel: `auto-smart[optimize_for=${named.optimizeFor}]`,
     }
   }
+  const parameterized = parseParameterizedModel(model)
+  if (parameterized) return parameterized
   // OpenCode defaults and Cursor's raw router ids map to Balance (Cursor's default Auto mode).
   if (isAutoCursorId(model)) {
     return {
@@ -52,6 +54,24 @@ export function resolveCursorModel(model: string): ResolvedCursorModel {
   return {
     pickerId: model,
     cursorId: model,
+    cliModel: model,
+  }
+}
+
+/** `composer-2.5[effort=high,fast=true]` is one picker row for an SDK model variant. */
+export function parseParameterizedModel(model: string): ResolvedCursorModel | undefined {
+  const match = /^([^[\]]+)\[([^[\]]+)\]$/.exec(model)
+  if (!match) return undefined
+  const params = match[2].split(",").flatMap((part) => {
+    const separator = part.indexOf("=")
+    if (separator <= 0) return []
+    return [{ id: part.slice(0, separator), value: part.slice(separator + 1) }]
+  })
+  if (params.length === 0) return undefined
+  return {
+    pickerId: model,
+    cursorId: match[1],
+    params,
     cliModel: model,
   }
 }

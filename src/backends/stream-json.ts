@@ -91,8 +91,10 @@ export function parseModelList(output: string): Array<{ id: string; name: string
     } catch {
       // Plain text listing.
     }
-    const id = trimmed.split(/\s+/)[0]?.replace(/^-/, "")
-    if (id && /^[a-z0-9][a-z0-9._-]*$/i.test(id)) models.push({ id, name: trimmed })
+    const separator = trimmed.indexOf(" - ")
+    const id = (separator > 0 ? trimmed.slice(0, separator) : trimmed.split(/\s+/)[0] ?? "").trim().replace(/^-/, "")
+    const name = separator > 0 ? trimmed.slice(separator + 3).trim() : id
+    if (id && /^[a-z0-9][a-z0-9._-]*$/i.test(id)) models.push({ id, name: name || id })
   }
   return models
 }

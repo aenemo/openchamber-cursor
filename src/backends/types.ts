@@ -61,11 +61,15 @@ export interface AuthMaterial {
   refreshToken?: string
 }
 
+/** Advertised to OpenCode. Cursor's catalog does not include a context size. */
+export const MODEL_CONTEXT_WINDOW = 256000
+export const MODEL_MAX_TOKENS = 32000
+
 export const FALLBACK_MODELS: CursorModel[] = [
-  { id: "auto-cursor-balanced", name: "Auto-Cursor-Balanced", contextWindow: 200000, maxTokens: 32000 },
-  { id: "auto-cursor-cost", name: "Auto-Cursor-Cost", contextWindow: 200000, maxTokens: 32000 },
-  { id: "auto-cursor-intelligence", name: "Auto-Cursor-Intelligence", contextWindow: 200000, maxTokens: 32000 },
-  { id: "auto", name: "Auto-Cursor-Balanced", contextWindow: 200000, maxTokens: 32000 },
-  { id: "composer-2.5", name: "Composer 2.5", contextWindow: 200000, maxTokens: 32000 },
-  { id: "composer-2", name: "Composer 2", contextWindow: 200000, maxTokens: 32000 },
+  { id: "auto-cursor-balanced", name: "Auto-Cursor-Balanced", contextWindow: MODEL_CONTEXT_WINDOW, maxTokens: MODEL_MAX_TOKENS },
+  { id: "auto-cursor-cost", name: "Auto-Cursor-Cost", contextWindow: MODEL_CONTEXT_WINDOW, maxTokens: MODEL_MAX_TOKENS },
+  { id: "auto-cursor-intelligence", name: "Auto-Cursor-Intelligence", contextWindow: MODEL_CONTEXT_WINDOW, maxTokens: MODEL_MAX_TOKENS },
+  { id: "auto", name: "Auto-Cursor-Balanced", contextWindow: MODEL_CONTEXT_WINDOW, maxTokens: MODEL_MAX_TOKENS },
+  { id: "composer-2.5", name: "Composer 2.5", contextWindow: MODEL_CONTEXT_WINDOW, maxTokens: MODEL_MAX_TOKENS },
+  { id: "composer-2", name: "Composer 2", contextWindow: MODEL_CONTEXT_WINDOW, maxTokens: MODEL_MAX_TOKENS },
 ]
