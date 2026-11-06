@@ -86,6 +86,7 @@ function stampModels(models: SdkListedModel[]): CursorModel[] {
     name: model.name,
     contextWindow: MODEL_CONTEXT_WINDOW,
     maxTokens: MODEL_MAX_TOKENS,
+    ...(model.isDefault ? { isDefault: true } : {}),
   }))
 }
 

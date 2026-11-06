@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { expandSdkModels } from "./sdk-models.js"
 
 describe("expandSdkModels", () => {
-  it("publishes every effort variant instead of only the model family", () => {
+  it("expands every effort variant under the family name and keeps Cursor's default", () => {
     expect(expandSdkModels([{
       id: "grok-4.7",
       name: "Grok 4.7",
@@ -11,8 +11,8 @@ describe("expandSdkModels", () => {
         { name: "Grok 4.7 High", params: [{ id: "effort", value: "high" }, { id: "fast", value: "true" }] },
       ],
     }])).toEqual([
-      { id: "grok-4.7[effort=medium]", name: "Grok 4.7 Medium" },
-      { id: "grok-4.7[effort=high,fast=true]", name: "Grok 4.7 High" },
+      { id: "grok-4.7[effort=medium]", name: "Grok 4.7", isDefault: true },
+      { id: "grok-4.7[effort=high,fast=true]", name: "Grok 4.7" },
     ])
   })
 

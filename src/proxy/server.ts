@@ -11,7 +11,14 @@ export interface ProxyDeps {
   getAuth: () => Promise<AuthMaterial | undefined>
   backends: Record<"cli" | "sdk" | "native", CursorBackend>
   fallbackDirectory: () => string
-  models: () => CursorModel[]
+  models: () => Array<Pick<CursorModel, "id">>
+  /** Map an OpenCode model id and selected variant to the Cursor id to run. */
+  selectModel?: (model: string, variant?: string, cursorModel?: string) => string
+}
+
+function header(req: http.IncomingMessage, name: string): string | undefined {
+  const value = req.headers[name]
+  return typeof value === "string" && value ? value : undefined
 }
 
 export interface RunningProxy {
@@ -199,8 +206,13 @@ export function startProxy(depsOrGet: ProxyDeps | (() => ProxyDeps)): Promise<Ru
       const requestStarted = Date.now()
       const body = JSON.parse(await readBody(req)) as ChatRequest
       const turn = prepareTurn(body)
-      const resolved = resolveCursorModel(turn.model)
-      const model = resolved.pickerId
+      const selected = deps.selectModel?.(
+        turn.model,
+        header(req, "x-opencodev2-cursor-variant"),
+        header(req, "x-opencodev2-cursor-model"),
+      ) ?? turn.model
+      const resolved = resolveCursorModel(selected)
+      const model = turn.model
       const id = `chatcmpl-${randomBytes(8).toString("hex")}`
       if (isTitleRequest(turn)) {
         const title = localTitle(turn.lastUserPrompt)

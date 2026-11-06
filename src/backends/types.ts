@@ -3,6 +3,8 @@ export interface CursorModel {
   name: string
   contextWindow: number
   maxTokens: number
+  /** Cursor's default variant within its model family, when the SDK reports one. */
+  isDefault?: boolean
 }
 
 export type BackendEvent =
