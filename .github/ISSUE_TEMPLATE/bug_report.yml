@@ -1,0 +1,122 @@
+name: Bug report
+description: Report a problem with opencodev2-cursor. Do not include API keys, tokens, or passwords.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please fill this out so install issues can be separated from auth issues.
+
+        **Do not paste Cursor API keys, OAuth tokens, cookies, or passwords.** Redact secrets from logs before attaching them.
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      description: Which OS did you see the problem on?
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: os_version
+    attributes:
+      label: OS version
+      description: For example Windows 11 24H2, macOS 15.1, Ubuntu 24.04.
+      placeholder: Windows 11 24H2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: OpenChamber / OpenCode surface
+      description: Where were you running the plugin?
+      options:
+        - OpenChamber desktop
+        - OpenChamber CLI / web
+        - OpenChamber VS Code extension
+        - OpenCode (CLI / TUI only)
+        - Other / unsure
+    validations:
+      required: true
+
+  - type: input
+    id: host_version
+    attributes:
+      label: OpenCode / OpenChamber version
+      description: OpenCode version, OpenChamber version, or both if you know them.
+      placeholder: OpenCode 2.2.5, OpenChamber 2.6.1
+    validations:
+      required: true
+
+  - type: input
+    id: node_version
+    attributes:
+      label: Node.js version
+      description: Output of `node -v`. Use the same Node that runs the plugin / Cursor SDK worker.
+      placeholder: v22.13.0
+    validations:
+      required: true
+
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin version
+      description: From `opencode plugin list`, or the version pinned in `opencode.json`.
+      placeholder: opencodev2-cursor@0.1.3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sign_in_method
+    attributes:
+      label: Cursor sign-in method
+      description: Which `/connect` method did you use? This helps separate auth failures from install failures. Do not paste the key or token.
+      options:
+        - cursor-agent (browser)
+        - API key
+        - Cursor account (native OAuth)
+        - Not sure / did not get that far
+        - N/A (problem before sign-in)
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened?
+      description: What you expected, what you got, and any error text (secrets redacted).
+      placeholder: Expected Cursor models after /connect. Got "Plugin failed to activate" instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps from a clean or known state.
+      placeholder: |
+        1. opencode plugin add opencodev2-cursor
+        2. Restart OpenChamber
+        3. /connect -> Cursor -> ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted log snippet (optional)
+      description: |
+        From the plugin log if useful (`opencodev2-cursor.log` in the plugin cache folder).
+        Windows: `%USERPROFILE%\.cache\opencodev2-cursor\`
+        macOS/Linux: `~/.cache/opencodev2-cursor/`
+        Remove keys, tokens, and personal paths if you prefer.
+      render: shell
+    validations:
+      required: false

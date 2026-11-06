@@ -111,6 +111,7 @@ Or delete the `opencodev2-cursor` entry from `opencode.json`. Restart afterwards
 - **"Cursor SDK needs Node.js 22.13 or newer".** Install a newer Node, or set `CURSOR_ACP_NODE_BIN` to its path.
 - **"Agent … already has active run".** Send the message again. A new turn cancels the stuck run.
 - **Sign-in with cursor-agent fails.** Run `cursor-agent login` in a terminal, then retry `/connect`.
+- **Still stuck?** Open a [Bug report](https://github.com/aenemo/opencodev2-cursor/issues/new?template=bug_report.yml). It asks for OS, surface, Node version, and sign-in method so install problems can be separated from auth problems. Do not paste API keys or tokens.
 
 ## Where files live
 
