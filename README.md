@@ -78,6 +78,18 @@ A parameter that is the same on every variant of a model (for example `cyber=fal
 
 The raw `auto-smart` and `default` ids are hidden so they do not duplicate those three rows. `cursor/auto` still routes to Balanced.
 
+**Picker labels start with the provider**, for example `Cursor - Claude Opus 5.5`. This keeps Cursor's Claude rows apart from the same models offered by another provider, such as Claude Code, which bills a different account.
+
+To label every other provider the same way (`Claude Code - Opus 5.5`), turn on `labelAllProviders`. It is off by default because it renames models that other plugins publish:
+
+```jsonc
+{
+  "plugins": [
+    { "package": "opencodev2-cursor", "options": { "labelAllProviders": true } }
+  ]
+}
+```
+
 Restart OpenChamber or OpenCode after an update so it reloads the model list. The cache at `models.json` keeps the previous list until the next discovery.
 
 ## Updates

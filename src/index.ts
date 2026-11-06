@@ -5,7 +5,7 @@ import { SdkBackend } from "./backends/sdk.js"
 import { NativeBackend } from "./backends/native/backend.js"
 import { ensureSdkApiKey } from "./backends/native/auth.js"
 import { registerIntegrations, resolveAuth } from "./plugin/auth.js"
-import { CURSOR_VARIANT_HEADER, modelsForPublish, noteDiscovered, publishProvider, publishedModels, selectModel } from "./plugin/catalog.js"
+import { CURSOR_VARIANT_HEADER, labelOtherProviders, modelsForPublish, noteDiscovered, publishProvider, publishedModels, selectModel } from "./plugin/catalog.js"
 import { startSharedProxy, type RunningProxy } from "./proxy/server.js"
 import { log } from "./util/log.js"
 
@@ -41,6 +41,7 @@ const OpenCodeV2Cursor = Plugin.define({
     state.port = proxy.port
     state.token = proxy.token
     await publishProvider(ctx, state)
+    if (ctx.options.labelAllProviders === true) await ctx.model.transform((editor) => labelOtherProviders(editor))
 
     const warm = async () => {
       const auth = await resolveAuth(ctx)
