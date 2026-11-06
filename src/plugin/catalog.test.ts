@@ -3,7 +3,7 @@ import os from "node:os"
 import path from "node:path"
 import { afterEach, describe, expect, it } from "vitest"
 import { FALLBACK_MODELS } from "../backends/types.js"
-import { modelsForPublish, noteDiscovered, resetCatalogForTests, resolveCursorModelId } from "./catalog.js"
+import { labelOtherProviders, modelInfo, modelsForPublish, noteDiscovered, publishedModels, resetCatalogForTests, resolveCursorModelId } from "./catalog.js"
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "opencodev2-cursor-models-"))
 process.env.OPENCODEV2_CURSOR_CACHE = dir
@@ -55,5 +55,33 @@ describe("cursor model catalog", () => {
     expect(ids).not.toContain("default")
     expect(resolveCursorModelId("auto")).toBe("auto-smart")
     expect(resolveCursorModelId("auto-cursor-cost")).toBe("auto-smart")
+  })
+
+  it("labels picker rows with the provider", () => {
+    noteDiscovered([
+      { id: "claude-opus-5-5[context=1m,effort=medium]", name: "Claude Opus 5.5", contextWindow: 1, maxTokens: 1 },
+      { id: "claude-opus-5-5[context=1m,effort=high]", name: "Claude Opus 5.5", contextWindow: 1, maxTokens: 1 },
+    ])
+    const opus = publishedModels().find((model) => model.id === "claude-opus-5-5[context=1m]")!
+    expect(modelInfo(opus).name).toBe("Cursor - Claude Opus 5.5")
+  })
+
+  it("labels other providers' models and leaves Cursor rows alone", () => {
+    const models = [
+      { providerID: "claude-code", id: "claude-opus-5-5", name: "Opus 5.5" },
+      { providerID: "claude-code", id: "already", name: "Claude Code - Sonnet 5.5" },
+      { providerID: "cursor", id: "gpt-5", name: "Cursor - GPT-5" },
+    ]
+    const renamed: Record<string, string> = {}
+    labelOtherProviders({
+      list: () => models,
+      update: (providerID, modelID, update) => {
+        const draft = { name: "" }
+        update(draft)
+        renamed[`${providerID}/${modelID}`] = draft.name
+      },
+      provider: { get: (providerID) => (providerID === "claude-code" ? { provider: { name: "Claude Code" } } : undefined) },
+    })
+    expect(renamed).toEqual({ "claude-code/claude-opus-5-5": "Claude Code - Opus 5.5" })
   })
 })

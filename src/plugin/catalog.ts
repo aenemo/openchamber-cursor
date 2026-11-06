@@ -4,9 +4,11 @@ import { Integration, Model, Provider, type Plugin } from "@opencode/plugin"
 import { AUTO_CURSOR_MODELS, parseParameterizedModel, resolveCursorModel } from "../backends/auto-models.js"
 import { FALLBACK_MODELS, type CursorModel } from "../backends/types.js"
 import { cacheDir } from "../util/paths.js"
+import { pickerLabel } from "./labels.js"
 import { groupModels, selectCursorModel, type PublishedModel } from "./variants.js"
 
 export const PROVIDER_ID = "cursor"
+export const PROVIDER_NAME = "Cursor"
 export const INTEGRATION_ID = "cursor"
 
 export const CURSOR_MODEL_HEADER = "x-opencodev2-cursor-model"
@@ -17,7 +19,7 @@ export function modelInfo(model: PublishedModel) {
   const id = Model.ID.make(model.id)
   return {
     ...Model.Info.default(providerID, id),
-    name: model.name,
+    name: pickerLabel(PROVIDER_NAME, model.name),
     limit: { context: model.contextWindow, output: model.maxTokens },
     time: { released: 0 },
     variants: model.variants.map((variant) => ({
@@ -140,7 +142,7 @@ export async function publishProvider(ctx: Plugin.Context, state: { port: number
     editor.add({
       info: {
         ...Provider.Info.empty(providerID),
-        name: "Cursor",
+        name: PROVIDER_NAME,
         activation: "enabled",
         integrationID: Integration.ID.make("cursor"),
         package: "@opencode/ai/providers/openai-compatible",
@@ -153,4 +155,20 @@ export async function publishProvider(ctx: Plugin.Context, state: { port: number
       models: publishedModels().map((model) => modelInfo(model)),
     })
   })
+}
+
+interface LabelEditor {
+  list(): ReadonlyArray<{ providerID: string; id: string; name: string }>
+  update(providerID: string, modelID: string, update: (model: { name: string }) => void): void
+  provider: { get(providerID: string): { provider: { name?: string } } | undefined }
+}
+
+/** Give every other provider's models the same `<Provider> - <name>` picker label. */
+export function labelOtherProviders(editor: LabelEditor): void {
+  for (const model of editor.list()) {
+    if (model.providerID === PROVIDER_ID) continue
+    const provider = editor.provider.get(model.providerID)?.provider.name || model.providerID
+    const label = pickerLabel(provider, model.name)
+    if (label !== model.name) editor.update(model.providerID, model.id, (draft) => { draft.name = label })
+  }
 }
