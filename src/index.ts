@@ -5,7 +5,7 @@ import { SdkBackend } from "./backends/sdk.js"
 import { NativeBackend } from "./backends/native/backend.js"
 import { ensureSdkApiKey } from "./backends/native/auth.js"
 import { registerIntegrations, resolveAuth } from "./plugin/auth.js"
-import { modelsForPublish, noteDiscovered, publishProvider } from "./plugin/catalog.js"
+import { CURSOR_VARIANT_HEADER, modelsForPublish, noteDiscovered, publishProvider, publishedModels, selectModel } from "./plugin/catalog.js"
 import { startSharedProxy, type RunningProxy } from "./proxy/server.js"
 import { log } from "./util/log.js"
 
@@ -35,7 +35,8 @@ const OpenCodeV2Cursor = Plugin.define({
       getAuth: () => resolveAuth(ctx),
       backends: { cli, sdk, native },
       fallbackDirectory: () => ctx.location.directory,
-      models: () => modelsForPublish(),
+      models: () => publishedModels(),
+      selectModel,
     })
     state.port = proxy.port
     state.token = proxy.token
@@ -86,6 +87,7 @@ const OpenCodeV2Cursor = Plugin.define({
         }
         event.headers["x-opencode-directory"] = encodeURIComponent(directory)
         event.headers["x-opencodev2-cursor-session"] = String(event.sessionID)
+        if (event.model.variant) event.headers[CURSOR_VARIANT_HEADER] = String(event.model.variant)
         event.headers.authorization = `Bearer ${state.token}`
         event.baseURL = `http://127.0.0.1:${state.port}/v1`
       },

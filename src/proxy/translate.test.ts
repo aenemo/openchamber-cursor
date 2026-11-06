@@ -241,6 +241,44 @@ describe("proxy auth", () => {
     }
   })
 
+  it("runs the Cursor id for the selected picker variant", async () => {
+    const seen: Array<{ model: string; modelParams?: Array<{ id: string; value: string }> }> = []
+    const backend = {
+      id: "cli" as const,
+      async listModels() {
+        return []
+      },
+      async *run(request: { model: string; modelParams?: Array<{ id: string; value: string }> }) {
+        seen.push({ model: request.model, modelParams: request.modelParams })
+        yield { type: "done" as const, text: "ok" }
+      },
+    }
+    const proxy = await startProxy({
+      getAuth: async () => ({ kind: "cli" }),
+      backends: { cli: backend, sdk: backend, native: backend },
+      fallbackDirectory: () => process.cwd(),
+      models: () => [],
+      selectModel: (model, variant) => variant === "high-fast" ? `${model.slice(0, -1)},reasoning=high,fast=true]` : model,
+    })
+    try {
+      await fetch(`http://127.0.0.1:${proxy.port}/v1/chat/completions`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-opencodev2-cursor-variant": "high-fast" },
+        body: JSON.stringify({ model: "gpt-5.6-sol[context=272k]", stream: false, messages: [{ role: "user", content: "hi" }] }),
+      })
+      expect(seen[0]).toEqual({
+        model: "gpt-5.6-sol",
+        modelParams: [
+          { id: "context", value: "272k" },
+          { id: "reasoning", value: "high" },
+          { id: "fast", value: "true" },
+        ],
+      })
+    } finally {
+      await proxy.close()
+    }
+  })
+
   it("flushes the first SSE chunk before the backend finishes the turn", async () => {
     let release!: () => void
     const rest = new Promise<void>((resolve) => { release = resolve })

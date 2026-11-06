@@ -20,15 +20,16 @@ export function variantPickerId(modelId: string, params?: Array<{ id: string; va
  * Cursor.models.list() returns one catalog entry per model family. Effort and speed
  * are variants of that entry, and each one needs its own picker row.
  */
-export function expandSdkModels(models: readonly SdkListedModel[]): Array<{ id: string; name: string }> {
+export function expandSdkModels(models: readonly SdkListedModel[]): Array<{ id: string; name: string; isDefault?: boolean }> {
   const seen = new Set<string>()
-  const expanded: Array<{ id: string; name: string }> = []
+  const expanded: Array<{ id: string; name: string; isDefault?: boolean }> = []
   for (const model of models) {
     const variants = model.variants ?? []
     const rows = variants.length > 0
       ? variants.map((variant) => ({
           id: variantPickerId(model.id, variant.params),
-          name: variant.name || model.name,
+          name: model.name,
+          ...(variant.isDefault ? { isDefault: true } : {}),
         }))
       : [{ id: model.id, name: model.name }]
     for (const row of rows) {

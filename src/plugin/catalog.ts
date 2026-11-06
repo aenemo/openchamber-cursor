@@ -1,14 +1,18 @@
 import fs from "node:fs"
 import path from "node:path"
 import { Integration, Model, Provider, type Plugin } from "@opencode/plugin"
-import { AUTO_CURSOR_MODELS, resolveCursorModel } from "../backends/auto-models.js"
+import { AUTO_CURSOR_MODELS, parseParameterizedModel, resolveCursorModel } from "../backends/auto-models.js"
 import { FALLBACK_MODELS, type CursorModel } from "../backends/types.js"
 import { cacheDir } from "../util/paths.js"
+import { groupModels, selectCursorModel, type PublishedModel } from "./variants.js"
 
 export const PROVIDER_ID = "cursor"
 export const INTEGRATION_ID = "cursor"
 
-export function modelInfo(model: CursorModel) {
+export const CURSOR_MODEL_HEADER = "x-opencodev2-cursor-model"
+export const CURSOR_VARIANT_HEADER = "x-opencodev2-cursor-variant"
+
+export function modelInfo(model: PublishedModel) {
   const providerID = Provider.ID.make(PROVIDER_ID)
   const id = Model.ID.make(model.id)
   return {
@@ -16,6 +20,10 @@ export function modelInfo(model: CursorModel) {
     name: model.name,
     limit: { context: model.contextWindow, output: model.maxTokens },
     time: { released: 0 },
+    variants: model.variants.map((variant) => ({
+      id: Model.VariantID.make(variant.id),
+      headers: { [CURSOR_MODEL_HEADER]: variant.cursorId },
+    })),
   }
 }
 
@@ -41,9 +49,11 @@ function readPersisted(): CursorModel[] {
 }
 
 let current: CursorModel[] | undefined
+let grouped: PublishedModel[] | undefined
 
 export function resetCatalogForTests(): void {
   current = undefined
+  grouped = undefined
 }
 
 /**
@@ -58,8 +68,10 @@ export function ensureRoutableAliases(models: CursorModel[]): CursorModel[] {
     || byId.get("auto")
     || FALLBACK_MODELS[0]!
 
-  byId.delete("auto-smart")
-  byId.delete("default")
+  for (const id of [...byId.keys()]) {
+    const base = parseParameterizedModel(id)?.cursorId ?? id
+    if (base === "auto-smart" || base === "default") byId.delete(id)
+  }
   // `auto` routes to Balanced for compatibility, but publishing it makes a second
   // picker row with the same display name as Auto-Cursor-Balanced.
   byId.delete("auto")
@@ -94,10 +106,25 @@ export function modelsForPublish(): CursorModel[] {
   return current
 }
 
+/** One OpenCode model per Cursor family and context window; effort, thinking and fast are variants. */
+export function publishedModels(): PublishedModel[] {
+  if (!grouped) grouped = groupModels(modelsForPublish())
+  return grouped
+}
+
+/** The Cursor id to run for an OpenCode model id and its selected variant. */
+export function selectModel(model: string, variant?: string, cursorModel?: string): string {
+  const published = publishedModels()
+  const group = published.find((entry) => entry.id === model)
+  if (group && cursorModel && group.variants.some((entry) => entry.cursorId === cursorModel)) return cursorModel
+  return selectCursorModel(published, model, variant)
+}
+
 /** Keep a real Cursor model list. A failed discovery returns the shared fallback array and must not wipe it. */
 export function noteDiscovered(next: CursorModel[]): boolean {
   if (next === FALLBACK_MODELS || next.length === 0) return false
   current = ensureRoutableAliases(next.map((model) => ({ ...model })))
+  grouped = undefined
   try {
     fs.mkdirSync(cacheDir(), { recursive: true })
     fs.writeFileSync(modelsFile(), JSON.stringify(current))
@@ -123,7 +150,7 @@ export async function publishProvider(ctx: Plugin.Context, state: { port: number
         },
         headers: { Authorization: `Bearer ${state.token}` },
       },
-      models: modelsForPublish().map((model) => modelInfo(model)),
+      models: publishedModels().map((model) => modelInfo(model)),
     })
   })
 }

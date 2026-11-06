@@ -45,11 +45,13 @@ describe("cursor model catalog", () => {
     noteDiscovered([
       { id: "auto-smart", name: "Auto", contextWindow: 1, maxTokens: 1 },
       { id: "default", name: "Default", contextWindow: 1, maxTokens: 1 },
+      { id: "auto-smart[optimize_for=cost]", name: "Auto", contextWindow: 1, maxTokens: 1 },
     ])
     const ids = modelsForPublish().map((model) => model.id)
     expect(ids).not.toContain("auto")
     expect(ids).toContain("auto-cursor-balanced")
     expect(ids).not.toContain("auto-smart")
+    expect(ids).not.toContain("auto-smart[optimize_for=cost]")
     expect(ids).not.toContain("default")
     expect(resolveCursorModelId("auto")).toBe("auto-smart")
     expect(resolveCursorModelId("auto-cursor-cost")).toBe("auto-smart")

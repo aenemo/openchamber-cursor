@@ -43,9 +43,42 @@ Source and issues: [github.com/aenemo/opencodev2-cursor](https://github.com/aene
    - **Log in with cursor-agent (browser)**. Run `cursor-agent login` first if you have not.
    - **API key**. Paste a key from [cursor.com/settings](https://cursor.com/settings), or set `CURSOR_API_KEY` in your environment.
    - **Cursor account (native OAuth)**. Sign in through the browser. The plugin mints and caches a Cursor user API key for the SDK.
-5. Pick a model from the **Cursor** provider. `Auto-Cursor-Balanced`, `Auto-Cursor-Cost`, and `Auto-Cursor-Intelligence` use Cursor's Auto Router. The list also includes your other Cursor models.
+5. Pick a model from the **Cursor** provider. See [Models and the Thinking menu](#models-and-the-thinking-menu) for how context size, reasoning, and fast mode are chosen.
 
 Install it **once**, in the global config. Do not also copy the plugin into the `plugins` folder under the OpenCode config folder, and do not list it in more than one config file. OpenCode loads that folder automatically, and a second copy fails activation.
+
+## Models and the Thinking menu
+
+Cursor lists every combination of context size, reasoning, thinking, and fast mode as its own model id. The plugin groups those into one picker row per model and context size, and puts the rest in OpenCode's **Thinking** menu (the same menu Claude and other providers use for effort).
+
+**Context size stays on the model.** OpenCode reads the context limit from the model itself, and that limit drives compaction and the token meter. A Thinking-menu choice cannot change it. A family that Cursor offers at two sizes is therefore two rows, each with the size Cursor reports:
+
+- `GPT-5.6 Sol` at 272K and at 1M
+- `Grok 4.7` at 256K and at 500K
+- Claude models at the sizes Cursor lists (200K, 300K, or 1M)
+
+`opencode models` shows the grouped id, for example `cursor/gpt-5.6-sol[context=272k]`, not every combination.
+
+**Reasoning, thinking, and fast are Thinking-menu variants.** Open the menu on a Cursor model and pick one. Names are built from the options that actually differ for that model:
+
+| What Cursor offers | Menu entries |
+| --- | --- |
+| Reasoning only (`low` through `max`, `xhigh`, `extra-high`, `none`, `minimal`) | `low`, `medium`, `high`, … |
+| A fast toggle as well | `medium` and `medium-fast`, `high` and `high-fast`, … |
+| Claude thinking on/off | `medium` and `medium-thinking`, plus `-fast` when speed is also a choice |
+| Fast only (Composer) | `standard` and `fast` |
+
+A parameter that is the same on every variant of a model (for example `cyber=false`) is left out of the name. The plugin still sends it.
+
+**The default is medium, fast off, thinking on** when you leave the menu on `default`. If Cursor marks one variant as its own default, that one is used instead. The three Auto Router rows stay separate models, because each one is a different routing mode rather than an effort level:
+
+- `Auto-Cursor-Balanced`
+- `Auto-Cursor-Cost`
+- `Auto-Cursor-Intelligence`
+
+The raw `auto-smart` and `default` ids are hidden so they do not duplicate those three rows. `cursor/auto` still routes to Balanced.
+
+Restart OpenChamber or OpenCode after an update so it reloads the model list. The cache at `models.json` keeps the previous list until the next discovery.
 
 ## Updates
 
