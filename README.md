@@ -78,19 +78,29 @@ A parameter that is the same on every variant of a model (for example `cyber=fal
 
 The raw `auto-smart` and `default` ids are hidden so they do not duplicate those three rows. `cursor/auto` still routes to Balanced.
 
-**Picker labels start with the provider**, for example `Cursor - Claude Opus 5.5`. This keeps Cursor's Claude rows apart from the same models offered by another provider, such as Claude Code, which bills a different account.
+**Picker labels for Cursor models start with the provider**, for example `Cursor - Claude Opus 5.5`. This is always on. It keeps Cursor's Claude rows apart from the same models offered by another provider, such as Claude Code, which bills a different account. OpenChamber also shows the context size on the model line.
 
-To label every other provider the same way (`Claude Code - Opus 5.5`), turn on `labelAllProviders`. It is off by default because it renames models that other plugins publish:
+**Label every other provider the same way** with `labelAllProviders`. It is off by default, because it renames models that other plugins publish. With it on, Claude Code's `Opus 5.5` becomes `Claude Code - Opus 5.5`, and OpenCode's own models pick up an `OpenCode -` prefix too.
+
+`opencode plugin add opencodev2-cursor` writes a plain string entry and does not turn the option on. If the entry is already an object, running `plugin add` again replaces it and drops the option. Add it by hand in the global config:
 
 ```jsonc
 {
+  "$schema": "https://opencode.ai/config.json",
   "plugins": [
     { "package": "opencodev2-cursor", "options": { "labelAllProviders": true } }
   ]
 }
 ```
 
-Restart OpenChamber or OpenCode after an update so it reloads the model list. The cache at `models.json` keeps the previous list until the next discovery.
+| | Global config file |
+| --- | --- |
+| Windows | `%USERPROFILE%\.config\opencode\opencode.json` |
+| macOS and Linux | `~/.config/opencode/opencode.json` |
+
+A provider you define yourself under `providers` in that file keeps the `name` you wrote. The option does not rename those rows. Put the provider in the name there, for example `"name": "JJS AI - jjs-code"`.
+
+Restart OpenChamber or OpenCode after changing the option so it reloads the model list. The cache at `models.json` keeps the previous list until the next discovery.
 
 ## Updates
 
